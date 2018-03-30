@@ -22,21 +22,38 @@ app.use(cookieSession({
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-    res.json({
-        status: 'session cookie not set'
-    });
+    if (req.session.token) {
+        res.cookie('token', req.session.token);
+        res.json({
+            status: 'session cookie set'
+        });
+    } else {
+        res.cookie('token', '')
+        res.json({
+            status: 'session cookie not set'
+        });
+    }
 });
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile']
 }));
 
+//set token returned by google
 app.get('/auth/google/callback',
-    passport.authenticate('google', {
-        failureRedirect: '/'
-    }),
-    (req, res) => { }
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        req.session.token = req.user.token;
+        res.redirect('/');
+    }
 );
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    req.session = null;
+    res.redirect('/');
+});
+
 app.listen(5000, () => {
     console.log('Server is running on port 5000');
 });
