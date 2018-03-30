@@ -1,6 +1,9 @@
 //passport configuration file
+
+
 /* dotenv fetches credentials stored in .env file*/
 require('dotenv').config();
+
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var CLIENT_ID = process.env.CLIENT_ID;
@@ -17,7 +20,7 @@ module.exports = (passport) => {
     passport.use(new GoogleStrategy({
         clientID: CLIENT_ID,
         clientSecret: CLIENT_SECRET,
-        callbackURL: 'http://localhost:5000/auth/google/callback'
+        callbackURL: CALL_BACK
         },
         (token, refreshToken, profile, done) => {
             return done(null, {

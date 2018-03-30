@@ -1,10 +1,25 @@
 const express = require('express'),
 app = express(),
 passport = require('passport'),
-auth = require ('./auth');
+auth = require ('./auth'),
+cookieParser = require('cookie-parser'),
+cookieSession = require('cookie-session');
+
+/* dotenv fetches credentials stored in .env file*/
+require('dotenv').config();
+
+var COOKIE_KEY = process.env.COOKIE_KEY;
 
 auth(passport);
 app.use(passport.initialize());
+
+//register cookiesession and parser as middleware
+app.use(cookieSession({
+    name: 'session',
+    keys: [COOKIE_KEY]
+}));
+
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.json({
